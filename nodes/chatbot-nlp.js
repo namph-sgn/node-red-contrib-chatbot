@@ -90,11 +90,13 @@ module.exports = function(RED) {
         }
       }
       // skip if language is not detected
+
       if (_.isEmpty(language)) {
         done('Unable to detect content language, skipping');
         return;
       }
       // finally process
+      console.log(language, content)
       const response = await manager.process(language, content);
       // extract vars
       const variables = {};
