@@ -96,7 +96,6 @@ module.exports = function(RED) {
         return;
       }
       // finally process
-      console.log(language, content)
       const response = await manager.process(language, content);
       // extract vars
       const variables = {};

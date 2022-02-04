@@ -93,14 +93,14 @@ async function bootstrap(server, app, log, redSettings, RED) {
   console.log(lcd.timestamp() + '  ' + lcd.green('backend environment: ') + lcd.grey(GetEnvironment(RED)()));
   // front end evironment
   mcSettings.version = package.version;
-    if (process.env.DEV != null && (process.env.DEV.toLowerCase() === 'true' || process.env.DEV.toLowerCase() === 'dev')) {
-    mcSettings.environment = 'development';
+
+  let frontendEnvironment = 'production';
+  if (process.env.DEV != null && (process.env.DEV.toLowerCase() === 'true' || process.env.DEV.toLowerCase() === 'dev')) {
+    frontendEnvironment = 'development';
   } else if (process.env.DEV != null && process.env.DEV.toLowerCase() === 'plugin') {
-    mcSettings.environment = 'plugin';
-  } else {
-    mcSettings.environment = 'production';
+    frontendEnvironment = 'plugin';
   }
-  console.log(lcd.timestamp() + '  ' + lcd.green('front end environment: ') + lcd.grey(mcSettings.environment));
+  console.log(lcd.timestamp() + '  ' + lcd.green('front end environment: ') + lcd.grey(frontendEnvironment));
   // get the database path
   if (!_.isEmpty(process.env.REDBOT_DB_PATH)) {
     mcSettings.dbPath = path.join(process.env.REDBOT_DB_PATH, 'mission-control.sqlite');
@@ -319,12 +319,12 @@ Some **formatting** is _allowed_!`
     async (req, res) => {
       fs.readFile(`${__dirname}/src/login.html`, (err, data) => {
         const template = data.toString();
-        const assets = mcSettings.environment === 'development' || mcSettings.environment === 'plugin' ?
+        const assets = frontendEnvironment === 'development' || frontendEnvironment === 'plugin' ?
         'http://localhost:8080/login.js' : `${mcSettings.root}/assets/login.js`;
         const bootstrap = { };
         const json = `<script>
         window.process = { env: { NODE_ENV: 'development' }};
-        var bootstrap = ${JSON.stringify(bootstrap)};var mc_environment='${mcSettings.environment}';</script>`;
+        var bootstrap = ${JSON.stringify(bootstrap)};var mc_environment='${frontendEnvironment}';</script>`;
         res.send(template
           .replace('{{assets}}', assets)
           .replace('{{data}}', json)
@@ -365,17 +365,17 @@ Some **formatting** is _allowed_!`
           user: req.user,
           settings: {
             ...mcSettings,
-            environment: mcSettings.environment }
+            environment: frontendEnvironment }
         };
 
-        const assets = mcSettings.environment === 'development' || mcSettings.environment === 'plugin' ?
+        const assets = frontendEnvironment === 'development' || frontendEnvironment === 'plugin' ?
           'http://localhost:8080/main.js' : `${mcSettings.root}/assets/main.js`;
         // link external plugin scripts only in plugin mode
         let pluginsScript = [];
-        if (mcSettings.environment === 'plugin' || mcSettings.environment === 'production') {
+        if (frontendEnvironment === 'plugin' || frontendEnvironment === 'production') {
           pluginsScript = plugins.map(plugin => `<script src="${mcSettings.root}/plugins/${plugin.filename}"></script>`);
         }
-        const json = `<script>var bootstrap = ${JSON.stringify(bootstrap)};var mc_environment='${mcSettings.environment}';</script>`;
+        const json = `<script>var bootstrap = ${JSON.stringify(bootstrap)};var mc_environment='${frontendEnvironment}';</script>`;
         res.send(template.replace('{{data}}', json).replace('{{assets}}', assets).replace('{{plugins}}', pluginsScript.join('')));
      });
     }

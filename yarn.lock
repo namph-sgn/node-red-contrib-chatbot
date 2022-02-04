@@ -12154,7 +12154,7 @@
   "resolved" "https://registry.npmjs.org/node-modules-regexp/-/node-modules-regexp-1.0.0.tgz"
   "version" "1.0.0"
 
-"node-nlp@^3.10.2":
+"node-nlp@3.10.2":
   "integrity" "sha512-xvTGtbNJNeCNX4zmhDhmyLoocRoEYPRiYBitiD6zptvUjzK9gpO3VXl08QNpKJQXNXvdUE50AecRTaDVM0i8DQ=="
   "resolved" "https://registry.npmjs.org/node-nlp/-/node-nlp-3.10.2.tgz"
   "version" "3.10.2"
