@@ -21,6 +21,7 @@ const Settings = require('./src/settings');
 const validators = require('./lib/helpers/validators');
 const uploadFromBuffer = require('./lib/helpers/upload-from-buffer');
 const chatbotIdGenerator = require('./lib/utils/chatbot-id-generator');
+const GetEnvironment = require('./lib/helpers/get-environment');
 
 //const { execute, subscribe } = require('graphql');
 //const { SubscriptionServer } = require('subscriptions-transport-ws');
@@ -32,7 +33,7 @@ const Events = new events.EventEmitter();
 module.exports = function(RED) {
   if (!initialized) {
     initialized = true;
-    bootstrap(RED.server, RED.httpNode || RED.httpAdmin, RED.log, RED.settings);
+    bootstrap(RED.server, RED.httpNode || RED.httpAdmin, RED.log, RED.settings, RED);
   }
   // exposed methods
   return {
@@ -64,10 +65,11 @@ function sendMessage(topic, payload) {
 
 
 
-async function bootstrap(server, app, log, redSettings) {
+async function bootstrap(server, app, log, redSettings, RED) {
   const mcSettings = redSettings.RedBot || {};
 
-  if (mcSettings.enableMissionControl !== true && process.env.REDBOT_ENABLE_MISSION_CONTROL !== 'true') {
+  // check if mission control is enabled
+  if (!(mcSettings.enableMissionControl || process.env.REDBOT_ENABLE_MISSION_CONTROL === 'true')) {
     console.log(lcd.timestamp() + 'Red Bot Mission Control is not enabled.');
     console.log(lcd.timestamp() + '  ' + lcd.grey('Enable it by adding in Node-RED settings.js:'));
     console.log(lcd.timestamp() + '  ' + lcd.grey('  // ...'));
@@ -88,6 +90,8 @@ async function bootstrap(server, app, log, redSettings) {
   }
   // get mission control configurations
   console.log(lcd.timestamp() + 'Red Bot Mission Control configuration:');
+  console.log(lcd.timestamp() + '  ' + lcd.green('backend environment: ') + lcd.grey(GetEnvironment(RED)()));
+  // front end evironment
   mcSettings.version = package.version;
     if (process.env.DEV != null && (process.env.DEV.toLowerCase() === 'true' || process.env.DEV.toLowerCase() === 'dev')) {
     mcSettings.environment = 'development';
