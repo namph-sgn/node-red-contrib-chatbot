@@ -6,6 +6,7 @@ import { useCodePlug } from 'code-plug';
 import { Link, useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import useFetch from 'use-http';
+import useCookie from 'react-use-cookie';
 
 import AppContext from '../common/app-context';
 import useCurrentUser from '../hooks/current-user';
@@ -51,6 +52,7 @@ const sortBy = (a, b) => {
 };
 
 const AppHeader = () => {
+  const [, setCookieChatbotId] = useCookie('chatbotId', '');
   const [, setChatbotId] = useLocalStorage('chatbotId', undefined);
   const { post } = useFetch('/mc/logout');
   const { user } = useCurrentUser();
@@ -84,6 +86,11 @@ const AppHeader = () => {
               value={state.chatbotId}
               onChange={(chatbotId => {
                 dispatch({ type: 'selectChatbot', chatbotId });
+                setCookieChatbotId(chatbotId);
+
+                // TODO check if set of plugins is different and a reload is required
+
+
                 setChatbotId(chatbotId);
               })}
             />

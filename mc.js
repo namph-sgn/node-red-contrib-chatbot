@@ -22,6 +22,8 @@ const validators = require('./lib/helpers/validators');
 const uploadFromBuffer = require('./lib/helpers/upload-from-buffer');
 const chatbotIdGenerator = require('./lib/utils/chatbot-id-generator');
 const GetEnvironment = require('./lib/helpers/get-environment');
+const { stringify } = require('querystring');
+const { cookie } = require('request');
 
 //const { execute, subscribe } = require('graphql');
 //const { SubscriptionServer } = require('subscriptions-transport-ws');
@@ -352,8 +354,21 @@ Some **formatting** is _allowed_!`
         return;
       }
 
+      console.log('req cookie', req.get('Cookie'));
+
+      const cookies = req.get('Cookie')
+        .split(';')
+        .map(str => str.trim())
+        .map(str => str.split('='))
+        .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+
+
+      console.log('parsed cookie', cookies);
+
       const chatbot = await ChatBot.findOne();
-      const plugins = await chatbot.getPlugins({ limit: 9999 });
+      const plugins = !_.isEmpty(cookies.chatbotId) ?
+        await Plugin.findAll({ where: { chatbotId: parseInt(cookies.chatbotId, 10) }}) : [];
+
       // inject user info into template
       fs.readFile(`${__dirname}/src/index.html`, (err, data) => {
         const template = data.toString();
