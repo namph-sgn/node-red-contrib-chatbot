@@ -264,13 +264,14 @@ module.exports = mcSettings => {
   const Plugin = sequelize.define('plugins', {
     plugin: Sequelize.STRING,
     version: Sequelize.STRING,
-    filename: Sequelize.STRING
+    filename: Sequelize.STRING,
+    chatbotId: Sequelize.STRING
   }, {
     indexes: [
     ]
   });
 
-  ChatBot.Plugins = ChatBot.hasMany(Plugin);
+  //ChatBot.Plugins = ChatBot.hasMany(Plugin);
 
   /*if (!fs.existsSync(dbPath)) {
     sequelize.sync({ force: true })

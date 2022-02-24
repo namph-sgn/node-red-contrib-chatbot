@@ -355,7 +355,7 @@ Some **formatting** is _allowed_!`
       }
 
       console.log('req cookie', req.get('Cookie'));
-
+      // parse the cookies
       const cookies = req.get('Cookie')
         .split(';')
         .map(str => str.trim())
@@ -367,7 +367,8 @@ Some **formatting** is _allowed_!`
 
       const chatbot = await ChatBot.findOne();
       const plugins = !_.isEmpty(cookies.chatbotId) ?
-        await Plugin.findAll({ where: { chatbotId: parseInt(cookies.chatbotId, 10) }}) : [];
+        await Plugin.findAll({ where: { chatbotId: cookies.chatbotId }}) : [];
+      console.log('Including plugins: ', plugins.map(plugin => plugin.plugin));
 
       // inject user info into template
       fs.readFile(`${__dirname}/src/index.html`, (err, data) => {

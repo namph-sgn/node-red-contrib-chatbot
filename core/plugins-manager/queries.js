@@ -68,4 +68,21 @@ query($chatbotId: String) {
   }
 }`;
 
-export { INSTALL_PLUGIN, CHATBOT, UNISTALL_PLUGIN, UPDATE_PLUGIN };
+const GET_CHATBOT = gql`
+query($chatbotId: String) {
+  chatbot(chatbotId: $chatbotId) {
+   	id,
+    name,
+    description,
+    guid,
+    chatbotId,
+    plugins {
+      id,
+      plugin,
+      version,
+      filename
+    }
+  }
+}`;
+
+export { INSTALL_PLUGIN, CHATBOT, UNISTALL_PLUGIN, UPDATE_PLUGIN, GET_CHATBOT };

@@ -1,8 +1,10 @@
 import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
+import gql from 'graphql-tag';
 import gravatar from 'gravatar';
-import { Tooltip, Whisper, Header, Navbar, Dropdown, Nav, Icon, IconButton, Avatar, SelectPicker } from 'rsuite';
+import { Tooltip, Whisper, Header, Navbar, Dropdown, Nav, Icon, IconButton, Avatar, Notification } from 'rsuite';
 import { useCodePlug } from 'code-plug';
+import { useApolloClient } from 'react-apollo';
 import { Link, useHistory } from 'react-router-dom';
 import _ from 'lodash';
 import useFetch from 'use-http';
@@ -51,9 +53,28 @@ const sortBy = (a, b) => {
   return 0;
 };
 
+const GET_CHATBOT = gql`
+query($chatbotId: String) {
+  chatbot(chatbotId: $chatbotId) {
+   	id,
+    name,
+    description,
+    guid,
+    chatbotId,
+    plugins {
+      id,
+      plugin,
+      version,
+      filename
+    }
+  }
+}`;
+
+
 const AppHeader = () => {
   const [, setCookieChatbotId] = useCookie('chatbotId', '');
   const [, setChatbotId] = useLocalStorage('chatbotId', undefined);
+  const client = useApolloClient();
   const { post } = useFetch('/mc/logout');
   const { user } = useCurrentUser();
   const { state, dispatch } = useContext(AppContext);
@@ -84,15 +105,22 @@ const AppHeader = () => {
             <ChatbotsSelector
               chatbots={state.chatbots}
               value={state.chatbotId}
-              onChange={(chatbotId => {
-                dispatch({ type: 'selectChatbot', chatbotId });
-                setCookieChatbotId(chatbotId);
-
-                // TODO check if set of plugins is different and a reload is required
-
-
-                setChatbotId(chatbotId);
-              })}
+              onChange={async chatbotId => {
+                // fetch new chatbot
+                const result = await client.query({ query: GET_CHATBOT, fetchPolicy: 'network-only', variables: { chatbotId: chatbotId +'2' } });
+                console.log('resuklt', result)
+                if (result.data?.chatbot != null) {
+                  dispatch({ type: 'selectChatbot', chatbot: result.data.chatbot });
+                  setCookieChatbotId(chatbotId);
+                  setChatbotId(chatbotId);
+                } else {
+                  Notification.error({
+                    placement: 'topStart',
+                    title: 'Error',
+                    description: `Something went wrong trying to switch to chatbot "${chatbotId}"`
+                  });
+                }
+              }}
             />
             {user.isEmptyPassword && (
               <Whisper

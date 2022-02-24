@@ -45,13 +45,13 @@ export const LogoSimple = ({ width = 70, height = 50 }) => (
 
 export const LogoFull = ({ width = 366, height = 86, style }) => (
   <svg width={`${width}px`} height={`${height}px`} style={style} viewBox="0 0 366 86" version="1.1">
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
         <g id="FullLogo">
             <rect id="Rectangle" fill="#A01818" x="0" y="3" width="334" height="79" rx="8"></rect>
-            <text id="R" transform="translate(98.500000, 43.000000) scale(-1, 1) translate(-98.500000, -43.000000) " font-family="Helvetica" font-size="72" font-weight="normal" fill="#FFFFFF">
+            <text id="R" transform="translate(98.500000, 43.000000) scale(-1, 1) translate(-98.500000, -43.000000) " fontFamily="Helvetica" fontSize="72" fontWeight="normal" fill="#FFFFFF">
                 <tspan x="66" y="69">R</tspan>
             </text>
-            <text id="edBot" font-family="Helvetica" font-size="72" font-weight="normal" fill="#FFFFFF">
+            <text id="edBot" fontFamily="Helvetica" fontSize="72" fontWeight="normal" fill="#FFFFFF">
                 <tspan x="130" y="69">edBot</tspan>
             </text>
             <g id="Face" transform="translate(10.000000, 15.000000)" fill="#FFFBFB">

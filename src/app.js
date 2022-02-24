@@ -10,10 +10,21 @@ import {
 } from 'react-router-dom';
 import { CodePlug, plug, useCodePlug } from 'code-plug';
 
-plug('reducers', (state, action) => {
+import sameArray from './helpers/same-array';
 
+
+plug('reducers', (state, action) => {
   if (action.type === 'selectChatbot') {
-    return { ...state, chatbotId: action.chatbotId };
+    const currentPluginsSet = state.chatbot.plugins.map(({ plugin }) => plugin);
+    const newPluginsSet = action.chatbot.plugins.map(({ plugin }) => plugin);
+    // if plugins set are different, then needs a reload
+    const needRestart = state.needRestart || !sameArray(currentPluginsSet, newPluginsSet);
+    return {
+      ...state,
+      chatbotId: action.chatbot.chatbotId,
+      chatbot: action.chatbot,
+      needRestart
+    };
   } else if (action.type === 'setChatbots') {
     return { ...state, chatbots: action.chatbots };
   } else if (action.type === 'setChatbot') {

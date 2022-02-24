@@ -770,7 +770,7 @@ module.exports = ({
       plugins: {
         type: new GraphQLList(pluginType),
         description: 'The list of installed plugins',
-        resolve: (root) => root.getPlugins({ limit: 9999 })
+        resolve: (root) => Plugin.findAll({ where: { chatbotId: root.chatbotId }, limit: 9999 })
       },
       chatbotId: {
         type: GraphQLString,
@@ -1786,12 +1786,9 @@ module.exports = ({
             const pluginFile = fs.createWriteStream(`${mcSettings.pluginsPath}/${filename}`);
             response.body.pipe(pluginFile);
 
-            const chatbot = await ChatBot.findOne({
-              where: compactObject({ chatbotId })
-            });
             // destroy and re-create (only one plugin per chatbot.id)
-            await Plugin.destroy({ where: { plugin, chatbotId: chatbot.id }});
-            const installedPlugin = await Plugin.create({ plugin, url, version, chatbotId: chatbot.id, filename });
+            await Plugin.destroy({ where: { plugin, chatbotId }});
+            const installedPlugin = await Plugin.create({ plugin, url, version, chatbotId, filename });
             // create default configuration, if any, if not already exist
             if (!_.isEmpty(initialConfiguration)) {
               const existsConfiguration = await Configuration.findOne({
@@ -1833,7 +1830,7 @@ module.exports = ({
             initialConfiguration: { type: GraphQLString },
             chatbotId: { type: GraphQLString }
           },
-          resolve: async function(root, { plugin, url, version, initialConfiguration }) {
+          resolve: async function(root, { plugin, url, version, initialConfiguration, chatbotId }) {
             // get the current plugin
             const currentInstall = await Plugin.findOne({ where: { plugin }});
             // if found, otherwise just create
@@ -1847,10 +1844,9 @@ module.exports = ({
             const pluginFile = fs.createWriteStream(`${mcSettings.pluginsPath}/${filename}`);
             response.body.pipe(pluginFile);
 
-            const chatbot = await ChatBot.findOne();
             // destroy and re-create
             await Plugin.destroy({ where: { plugin }});
-            const installedPlugin = await Plugin.create({ plugin, url, version, chatbotId: chatbot.id, filename });
+            const installedPlugin = await Plugin.create({ plugin, url, version, chatbotId, filename });
             // create default configuration, if any, if not already exist
             if (!_.isEmpty(initialConfiguration)) {
               const existsConfiguration = await Configuration.findOne({ where: { namespace: plugin }});

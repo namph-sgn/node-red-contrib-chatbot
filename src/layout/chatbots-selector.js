@@ -9,7 +9,7 @@ import SmallTag from '../components/small-tag';
 const renderValue = (value, item) => {
   return (
     <span>
-      <Icon icon="commenting" size="1x" style={{ color: '#999999', marginRight: '6px' }}/>
+      <Icon icon="commenting" style={{ color: '#999999', marginRight: '6px' }}/>
       {item?.label}
     </span>
   );
