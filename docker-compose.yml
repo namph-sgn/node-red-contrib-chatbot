@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  redbot:
+    container_name: 'redbot'
+    image: 'guidone/redbot'
+    ports:
+      - '1880:1880'
+    environment:
+      REDBOT_ENABLE_MISSION_CONTROL: true
+    volumes:
+      - type: bind
+        source: ${REDBOT_DIR}
+        target: /usr/src/node-red/node_modules/node-red-contrib-chatbot

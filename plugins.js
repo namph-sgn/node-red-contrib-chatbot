@@ -1,3 +1,3 @@
-import './plugins/authorization';
-import './plugins/postcardbot';
-import './plugins/shop-openings';
+import './plugins/market-place';
+import './plugins/panopticon';
+import './plugins/send-message';

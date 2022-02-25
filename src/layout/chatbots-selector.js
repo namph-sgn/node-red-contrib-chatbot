@@ -20,7 +20,7 @@ const ChatbotsSelector = ({ chatbots, value, onChange }) => {
 
   const listedChatbots = useMemo(
     () => {
-      const allowedChatbotIds = user.chatbotIds.split(',');
+      const allowedChatbotIds = (user.chatbotIds ?? '').split(',');
       return chatbots
         .filter(({ chatbotId }) => !_.isEmpty(chatbotId))
         .filter(({ chatbotId }) => allowedChatbotIds.includes('*') || allowedChatbotIds.includes(chatbotId))
