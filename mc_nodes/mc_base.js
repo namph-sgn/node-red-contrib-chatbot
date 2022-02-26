@@ -1,3 +1,3 @@
 module.exports = function(RED) {
-  require('../mc')(RED);
+  require('./mc')(RED);
 };

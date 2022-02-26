@@ -42,7 +42,7 @@ const tx = function(key, language, predefined) {
 };
 
 module.exports = function(RED) {
-  const { Events } = require('../mc')(RED);
+  const { Events } = require('./mc')(RED);
 
   function MissionControlConfiguration(config) {
     RED.nodes.createNode(this, config);

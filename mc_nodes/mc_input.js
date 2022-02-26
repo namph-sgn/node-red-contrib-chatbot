@@ -2,8 +2,8 @@
 
 module.exports = function(RED) {
 
-  const { Events } = require('../mc')(RED);
-  
+  const { Events } = require('./mc')(RED);
+
   function MissionControlInput(config) {
     RED.nodes.createNode(this, config);
     const node = this;

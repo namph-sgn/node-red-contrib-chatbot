@@ -5,9 +5,41 @@ services:
     image: 'guidone/redbot'
     ports:
       - '1880:1880'
+      - '1943:1943'
+      - '1942:1942'
     environment:
       REDBOT_ENABLE_MISSION_CONTROL: true
+      NODE_RED_ENABLE_PROJECTS: true
+      NODE_RED_ENABLE_TOURS: false
+      DEV: true
     volumes:
       - type: bind
-        source: ${REDBOT_DIR}
-        target: /usr/src/node-red/node_modules/node-red-contrib-chatbot
+        source: ${REDBOT_DIR}/nodes
+        target: /usr/src/node-red/node_modules/node-red-contrib-chatbot/nodes
+      - type: bind
+        source: ${REDBOT_DIR}/mc_nodes
+        target: /usr/src/node-red/node_modules/node-red-contrib-chatbot/mc_nodes
+      - type: bind
+        source: ${REDBOT_DIR}/lib
+        target: /usr/src/node-red/node_modules/node-red-contrib-chatbot/lib
+      - type: bind
+        source: /Users/guidone/web/test-node-red/
+        target: /data
+  redbot-assets:
+    container_name: 'redbot-assets'
+    image: 'redbot-assets'
+    ports:
+      - '8080:8080'
+    volumes:
+      - type: bind
+        source: ${REDBOT_DIR}/src
+        target: /tmp/src
+      - type: bind
+        source: ${REDBOT_DIR}/webpack
+        target: /tmp/webpack
+      - type: bind
+        source: ${REDBOT_DIR}/core
+        target: /tmp/core
+      - type: bind
+        source: ${REDBOT_DIR}/plugins
+        target: /tmp/plugins

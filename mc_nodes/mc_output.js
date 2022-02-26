@@ -2,7 +2,7 @@ const _ = require('lodash');
 
 module.exports = function(RED) {
 
-  const { sendMessage } = require('../mc')(RED);
+  const { sendMessage } = require('./mc')(RED);
 
   function MissionControlOutput(config) {
     RED.nodes.createNode(this, config);

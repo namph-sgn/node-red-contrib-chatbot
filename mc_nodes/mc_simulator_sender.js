@@ -5,7 +5,7 @@ const { when } = require('../lib/utils');
 
 module.exports = function(RED) {
 
-  const { Events, sendMessage } = require('../mc')(RED);
+  const { Events, sendMessage } = require('./mc')(RED);
 
   function MissionControlSimulatorSender(config) {
     RED.nodes.createNode(this, config);

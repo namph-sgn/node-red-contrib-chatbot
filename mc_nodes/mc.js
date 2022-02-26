@@ -14,16 +14,14 @@ const fileupload = require('express-fileupload');
 const cloudinary = require('cloudinary').v2;
 const fetch = require('node-fetch');
 
-const lcd = require('./lib/lcd/index');
-const { hash } = require('./lib/utils/index');
-const DatabaseSchema = require('./database/index');
-const Settings = require('./src/settings');
-const validators = require('./lib/helpers/validators');
-const uploadFromBuffer = require('./lib/helpers/upload-from-buffer');
-const chatbotIdGenerator = require('./lib/utils/chatbot-id-generator');
-const GetEnvironment = require('./lib/helpers/get-environment');
-const { stringify } = require('querystring');
-const { cookie } = require('request');
+const lcd = require('../lib/lcd/index');
+const { hash } = require('../lib/utils/index');
+const DatabaseSchema = require('../database/index');
+const Settings = require('../src/settings');
+const validators = require('../lib/helpers/validators');
+const uploadFromBuffer = require('../lib/helpers/upload-from-buffer');
+const chatbotIdGenerator = require('../lib/utils/chatbot-id-generator');
+const GetEnvironment = require('../lib/helpers/get-environment');
 
 //const { execute, subscribe } = require('graphql');
 //const { SubscriptionServer } = require('subscriptions-transport-ws');
@@ -83,7 +81,7 @@ async function bootstrap(server, app, log, redSettings, RED) {
   }
 
   // get current version
-  const jsonPackage = fs.readFileSync(__dirname + '/package.json');
+  const jsonPackage = fs.readFileSync(__dirname + '/../package.json');
   let package;
   try {
     package = JSON.parse(jsonPackage.toString());
@@ -319,7 +317,7 @@ Some **formatting** is _allowed_!`
   app.get(
     '/mc/login',
     async (req, res) => {
-      fs.readFile(`${__dirname}/src/login.html`, (err, data) => {
+      fs.readFile(`${__dirname}/../src/login.html`, (err, data) => {
         const template = data.toString();
         const assets = frontendEnvironment === 'development' || frontendEnvironment === 'plugin' ?
         'http://localhost:8080/login.js' : `${mcSettings.root}/assets/login.js`;
@@ -371,7 +369,7 @@ Some **formatting** is _allowed_!`
       console.log('Including plugins: ', plugins.map(plugin => plugin.plugin));
 
       // inject user info into template
-      fs.readFile(`${__dirname}/src/index.html`, (err, data) => {
+      fs.readFile(`${__dirname}/../src/index.html`, (err, data) => {
         const template = data.toString();
         const bootstrap = {
           chatbot: {

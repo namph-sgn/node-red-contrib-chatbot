@@ -3,7 +3,7 @@ const { when, isCommand } = require('../lib/utils')
 
 module.exports = function(RED) {
 
-  const { Events, sendMessage } = require('../mc')(RED);
+  const { Events, sendMessage } = require('./mc')(RED);
 
   function MissionControlSimulatorReceiver(config) {
     RED.nodes.createNode(this, config);

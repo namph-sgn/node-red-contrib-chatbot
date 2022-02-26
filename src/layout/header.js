@@ -70,7 +70,6 @@ query($chatbotId: String) {
   }
 }`;
 
-
 const AppHeader = () => {
   const [, setCookieChatbotId] = useCookie('chatbotId', '');
   const [, setChatbotId] = useLocalStorage('chatbotId', undefined);
@@ -107,8 +106,7 @@ const AppHeader = () => {
               value={state.chatbotId}
               onChange={async chatbotId => {
                 // fetch new chatbot
-                const result = await client.query({ query: GET_CHATBOT, fetchPolicy: 'network-only', variables: { chatbotId: chatbotId +'2' } });
-                console.log('resuklt', result)
+                const result = await client.query({ query: GET_CHATBOT, fetchPolicy: 'network-only', variables: { chatbotId: chatbotId } });
                 if (result.data?.chatbot != null) {
                   dispatch({ type: 'selectChatbot', chatbot: result.data.chatbot });
                   setCookieChatbotId(chatbotId);

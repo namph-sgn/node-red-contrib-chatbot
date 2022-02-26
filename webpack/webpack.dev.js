@@ -11,7 +11,7 @@ module.exports = merge(common, {
     })
   ],
   devServer: {
-    contentBase: './dist',
+    //contentBase: './dist',
     bonjour: true
     //publicPath: './src/images',
     //hot: true,
