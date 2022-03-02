@@ -42,7 +42,8 @@ const ConfigureChatbot = () => {
     variables: {
       chatbotId: state.chatbotId
     },
-    fetchPolicy: 'network-only'
+    fetchPolicy: 'network-only',
+    skip: _.isEmpty(state.chatbotId)
   });
   const [
     editChatbot,
@@ -54,30 +55,45 @@ const ConfigureChatbot = () => {
     }
   });
 
+  console.log('loading', loading)
   const ready = !loading;
   const disabled = editLoading;
   const error = loadError || editError;
 
   return (
     <PageContainer className="page-configuration">
-      <Breadcrumbs pages={ready ? ['Chatbot', data.chatbot.name] : ['Chatbot']}/>
-      {error != null && <ShowError error={error} />}
-      <FlexboxGrid justify="space-between">
-        <FlexboxGrid.Item colspan={17} style={{ paddingTop: '20px', paddingLeft: '20px' }}>
-          {ready && (
-            <ConfigurationForm
-              value={_.omit(data.chatbot, ['id', 'updatedAt', 'createdAt', '__typename'])}
-              disabled={disabled}
-              onSubmit={chatbot => editChatbot({
-                variables: { chatbot, id: data.chatbot.id }
-              })}
-            />
-          )}
-        </FlexboxGrid.Item>
-        <FlexboxGrid.Item colspan={7} style={{ paddingTop: '20px', paddingLeft: '20px' }}>
+      {_.isEmpty(state.chatbotId) && (
+        <>
+          <Breadcrumbs pages={['Chatbot']}/>
+          <FlexboxGrid justify="space-between">
+            <FlexboxGrid.Item colspan={17} style={{ paddingTop: '20px', paddingLeft: '20px' }}>
+              <strong>Select a chatbot</strong> from the drop down menu in the top right corner.
+            </FlexboxGrid.Item>
+          </FlexboxGrid>
+        </>
+      )}
+      {!_.isEmpty(state.chatbotId) && (
+        <>
+          <Breadcrumbs pages={ready ? ['Chatbot', data.chatbot?.name] : ['Chatbot']}/>
+          {error != null && <ShowError error={error} />}
+          <FlexboxGrid justify="space-between">
+            <FlexboxGrid.Item colspan={17} style={{ paddingTop: '20px', paddingLeft: '20px' }}>
+              {ready && (
+                <ConfigurationForm
+                  value={_.omit(data.chatbot, ['id', 'updatedAt', 'createdAt', '__typename'])}
+                  disabled={disabled}
+                  onSubmit={chatbot => editChatbot({
+                    variables: { chatbot, id: data.chatbot.id }
+                  })}
+                />
+              )}
+            </FlexboxGrid.Item>
+            <FlexboxGrid.Item colspan={7} style={{ paddingTop: '20px', paddingLeft: '20px' }}>
 
-        </FlexboxGrid.Item>
-      </FlexboxGrid>
+            </FlexboxGrid.Item>
+          </FlexboxGrid>
+      </>
+      )}
     </PageContainer>
   );
 };

@@ -9,7 +9,7 @@ services:
       - '1942:1942'
     environment:
       REDBOT_ENABLE_MISSION_CONTROL: true
-      NODE_RED_ENABLE_PROJECTS: true
+      NODE_RED_ENABLE_PROJECTS: false
       NODE_RED_ENABLE_TOURS: false
       DEV: true
     volumes:
@@ -23,11 +23,13 @@ services:
         source: ${REDBOT_DIR}/lib
         target: /usr/src/node-red/node_modules/node-red-contrib-chatbot/lib
       - type: bind
-        source: /Users/guidone/web/test-node-red/
+        source: /Users/guidone/web/redbot-postcard/
         target: /data
   redbot-assets:
     container_name: 'redbot-assets'
-    image: 'redbot-assets'
+    build:
+      dockerfile: Dockerfile-webpack
+      context: .
     ports:
       - '8080:8080'
     volumes:
