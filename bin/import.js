@@ -1,16 +1,16 @@
 // dinamically build the imports in dev mode, based on existing plugins
-// in the ./plugins directory
+// in the ./mc-plugins directory
 const { readdirSync, writeFileSync, existsSync, mkdirSync } = require('fs');
 const lcd = require('../lib/lcd/index');
 
 // create plugins directory
-if (!existsSync(`${__dirname}/../plugins`)) {
-  mkdirSync(`${__dirname}/../plugins`);
+if (!existsSync(`${__dirname}/../mc_plugins`)) {
+  mkdirSync(`${__dirname}/../mc_plugins`);
 }
 
-const dirs = readdirSync(__dirname + '/../plugins', { withFileTypes: true })
+const dirs = readdirSync(__dirname + '/../mc_plugins', { withFileTypes: true })
   .filter(dirent => dirent.isDirectory());
-const imports = dirs.reduce((acc, dir) => acc += `import './plugins/${dir.name}';\n`, '');
+const imports = dirs.reduce((acc, dir) => acc += `import './mc_plugins/${dir.name}';\n`, '');
 writeFileSync(`${__dirname}/../plugins.js`, imports);
 
 console.log(lcd.orange('RedBot Mission Control') + ' - ' + lcd.white('development server'));

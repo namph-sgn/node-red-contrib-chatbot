@@ -11,4 +11,4 @@ COPY lib /tmp/lib
 
 EXPOSE 8080
 
-CMD ["npm","run","start-mc"]
+CMD ["npm","run","start-webpack"]

@@ -13620,7 +13620,7 @@
   dependencies:
     "asap" "~2.0.3"
 
-"prompts@^2.0.1":
+"prompts@^2.0.1", "prompts@^2.4.2":
   "integrity" "sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q=="
   "resolved" "https://registry.npmjs.org/prompts/-/prompts-2.4.2.tgz"
   "version" "2.4.2"

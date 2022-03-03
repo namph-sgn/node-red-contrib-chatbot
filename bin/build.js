@@ -30,7 +30,7 @@ const isValidPluginName = pluginName => pluginName.match(/^[A-Za-z0-9-_]*$/);
   }
 
   if (response.value === 'build') {
-    const dirs = readdirSync(__dirname + '/../plugins', { withFileTypes: true })
+    const dirs = readdirSync(__dirname + '/../mc_plugins', { withFileTypes: true })
       .filter(dirent => dirent.isDirectory());
     const response = await prompts(
       {
@@ -56,7 +56,7 @@ const isValidPluginName = pluginName => pluginName.match(/^[A-Za-z0-9-_]*$/);
           console.log(`stderr: ${stderr}`);
           return;
       }
-      const buildFile = `${__dirname}/../plugins/${response.value}/index.js`;
+      const buildFile = `${__dirname}/../mc_plugins/${response.value}/index.js`;
       const stats = statSync(buildFile);
       console.log(lcd.green('Build complete!'));
       console.log(lcd.green('File: ') + ' ' + lcd.grey(path.normalize(buildFile)));
@@ -74,13 +74,13 @@ const isValidPluginName = pluginName => pluginName.match(/^[A-Za-z0-9-_]*$/);
       validate: value => {
         if (!isValidPluginName(value)) {
           return `Invalid plugin name, juste letters and numbers or "_", "-"`;
-        } else if (existsSync(`${__dirname}/../plugins/${value}`)) {
+        } else if (existsSync(`${__dirname}/../mc_plugins/${value}`)) {
           return 'Plugin already exists';
         }
         return true;
       }
     });
-    const createDir = `${__dirname}/../plugins/${response.value}`;
+    const createDir = `${__dirname}/../mc_plugins/${response.value}`;
     mkdirSync(createDir);
     writeFileSync(`${createDir}/index.js`, `import React from 'react';
 import { plug } from 'code-plug';

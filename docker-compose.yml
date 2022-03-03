@@ -9,9 +9,9 @@ services:
       - '1942:1942'
     environment:
       REDBOT_ENABLE_MISSION_CONTROL: true
-      NODE_RED_ENABLE_PROJECTS: false
+      NODE_RED_ENABLE_PROJECTS: ${NODE_RED_ENABLE_PROJECTS}
       NODE_RED_ENABLE_TOURS: false
-      DEV: true
+      DEV: ${DEVELOPMENT_MODE}
     volumes:
       - type: bind
         source: ${REDBOT_DIR}/nodes
@@ -23,7 +23,10 @@ services:
         source: ${REDBOT_DIR}/lib
         target: /usr/src/node-red/node_modules/node-red-contrib-chatbot/lib
       - type: bind
-        source: /Users/guidone/web/redbot-postcard/
+        source: ${REDBOT_DIR}/bin
+        target: /usr/src/node-red/node_modules/node-red-contrib-chatbot/bin
+      - type: bind
+        source: ${DATA_DIR}
         target: /data
   redbot-assets:
     container_name: 'redbot-assets'
@@ -43,5 +46,5 @@ services:
         source: ${REDBOT_DIR}/core
         target: /tmp/core
       - type: bind
-        source: ${REDBOT_DIR}/plugins
-        target: /tmp/plugins
+        source: ${REDBOT_DIR}/mc_plugins
+        target: /tmp/mc_plugins
