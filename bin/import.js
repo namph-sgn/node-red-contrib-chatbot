@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // dinamically build the imports in dev mode, based on existing plugins
 // in the ./mc-plugins directory
 const { readdirSync, writeFileSync, existsSync, mkdirSync } = require('fs');

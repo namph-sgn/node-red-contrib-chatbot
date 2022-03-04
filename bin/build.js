@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const prompts = require('prompts');
 const path = require('path');
 const { readdirSync, statSync, mkdirSync, writeFileSync, existsSync } = require('fs');
@@ -73,7 +74,7 @@ const isValidPluginName = pluginName => pluginName.match(/^[A-Za-z0-9-_]*$/);
       //validate: value => value != null && value !== '' ? true : `Invalid plugin name, juste letters and numbers or "_", "-"`
       validate: value => {
         if (!isValidPluginName(value)) {
-          return `Invalid plugin name, juste letters and numbers or "_", "-"`;
+          return 'Invalid plugin name, juste letters and numbers or "_", "-"';
         } else if (existsSync(`${__dirname}/../mc_plugins/${value}`)) {
           return 'Plugin already exists';
         }
@@ -132,7 +133,5 @@ plug('pages', MyPage, {
         console.log('');
       }
     );
-
   }
-
 })();
