@@ -177,7 +177,7 @@ async function bootstrap(server, app, log, redSettings, RED) {
   // if database doesn't exist, then create it and run sync to create blank tables
   if (!fs.existsSync(mcSettings.dbPath)) {
     await sequelize.sync({ force: true })
-    await Admin.create({ username: 'admin', password: '', permissions: '*' });
+    await Admin.create({ username: 'admin', password: '', permissions: '*', chatbotIds: '*' });
     await ChatBot.create({ name: 'MyChatbot' });
     await Category.create({ name: 'A category', language: 'en', namespace: 'content' });
     await Content.create({
@@ -220,7 +220,8 @@ Some **formatting** is _allowed_!`
             avatar: user.avatar,
             email: user.email,
             isEmptyPassword: _.isEmpty(user.password),
-            permissions: !_.isEmpty(user.permissions) ? user.permissions.split(',') : []
+            permissions: !_.isEmpty(user.permissions) ? user.permissions.split(',') : [],
+            chatbotIds: user.chatbotIds
           });
         } else {
           done(null, false);

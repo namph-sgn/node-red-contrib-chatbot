@@ -21,6 +21,7 @@ mutation($id: Int!, $admin: InputAdmin!) {
     username,
     payload,
     permissions,
+    chatbotIds,
     createdAt,
     email
   }
@@ -36,6 +37,7 @@ mutation($admin: InputAdmin!) {
     username,
     payload,
     permissions,
+    chatbotIds,
     createdAt,
     email
   }

@@ -54,7 +54,6 @@ const Admins = () => {
   const [ admin, setAdmin ] = useState(null);
   const { saving, error,  deleteAdmin, editAdmin, createAdmin } = useAdmins();
 
-
   return (
     <PageContainer className="page-users">
       <Breadcrumbs pages={['Admins']}/>
@@ -65,6 +64,7 @@ const Admins = () => {
           disabled={saving}
           onCancel={() => setAdmin(null)}
           onSubmit={async admin => {
+            console.log('mando---', admin)
             if (admin.id != null) {
               await editAdmin({ variables: { id: admin.id, admin }});
             } else {
@@ -86,9 +86,7 @@ const Admins = () => {
         toolbar={(
           <div>
             <Button appearance="primary" onClick={() => {
-              setAdmin({
-                chatbotId: state.chatbotId
-              });
+              setAdmin({});
             }}>Create admin</Button>
           </div>
         )}

@@ -24,6 +24,7 @@
     "plugin": "node bin/build.js",
     "build": "cross-env NODE_OPTIONS=--max_old_space_size=8192 webpack --config webpack/webpack.prod.js -p",
     "build-plugin": "webpack --config webpack/webpack.plugin.js --display-modules",
+    "build-docker": "docker build . -t guidone/redbot",
     "start-mc-dev": "DEV=dev node-red",
     "start-mc-plugin": "DEV=plugin node-red"
   },
@@ -168,7 +169,7 @@
     "ngeohash": "^0.6.3",
     "node-emoji": "^1.3.1",
     "node-fetch": "^2.6.0",
-    "node-nlp": "3.10.2",
+    "node-nlp": "4.22.1",
     "node-telegram-bot-api": "^0.54.0",
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",

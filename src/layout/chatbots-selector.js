@@ -24,7 +24,7 @@ const ChatbotsSelector = ({ chatbots, value, onChange }) => {
       return chatbots
         .filter(({ chatbotId }) => !_.isEmpty(chatbotId))
         .filter(({ chatbotId }) => allowedChatbotIds.includes('*') || allowedChatbotIds.includes(chatbotId))
-        .map(({ chatbotId, name }) => ({ value: chatbotId, label: name }));
+        .map(({ chatbotId, name }) => ({ value: chatbotId, label: name ?? chatbotId }));
     },
     [user, chatbots]
   );
