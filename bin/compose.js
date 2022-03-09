@@ -22,10 +22,10 @@ const folderExists = dir => existsSync(dir) && lstatSync(dir).isDirectory();
       choices: [
         ...projects
           .map((item) => {
-            const [name, dir, projects] = item.split(',');
+            const [name, dir, projects, environment] = item.split(',');
             return {
               title: name,
-              description: `${dir} - (${projects === 'PROJECTS' ? 'projects' : 'standalone'})`,
+              description: `${dir} - (${projects === 'PROJECTS' ? 'projects' : 'standalone'}) - ${environment}`,
               value: item
             }
           }),
@@ -82,10 +82,22 @@ const folderExists = dir => existsSync(dir) && lstatSync(dir).isDirectory();
         initial: 0
       }
     );
+    const responseEnvironment = await prompts(
+      {
+        type: 'select',
+        name: 'value',
+        message: 'Select environment',
+        choices: [
+          { title: 'Development', value: 'development' },
+          { title: 'Production', value: 'production' }
+        ],
+        initial: 0
+      }
+    );
     // update local bots
     writeFileSync(
       `${__dirname}/../.local-bots`,
-      [...projects, `${responseName.value},${responseDir.value},${responseProjects.value}`].join('\n'),
+      [...projects, `${responseName.value},${responseDir.value},${responseProjects.value},${responseEnvironment.value}`].join('\n'),
       'utf8'
     );
     // update .env file
@@ -94,7 +106,8 @@ const folderExists = dir => existsSync(dir) && lstatSync(dir).isDirectory();
       'REDBOT_ENABLE_MISSION_CONTROL=true',
       'DEVELOPMENT_MODE=true',
       `DATA_DIR=${responseDir.value}`,
-      `NODE_RED_ENABLE_PROJECTS=${responseProjects.value}`
+      `NODE_RED_ENABLE_PROJECTS=${responseProjects.value}`,
+      `ENVIRONMENT=${responseEnvironment.value}`
     ];
     writeFileSync(`${__dirname}/../.env`, env.join('\n'));
 
@@ -102,7 +115,7 @@ const folderExists = dir => existsSync(dir) && lstatSync(dir).isDirectory();
     console.log(`Starting ${responseName.value} (${responseDir.value})`);
 
   } else {
-    const [name, dir, projects] = response.value.split(',');
+    const [name, dir, projects, environment] = response.value.split(',');
 
     // eslint-disable-next-line no-console
     console.log(`Starting ${name} (${dir})`);
@@ -118,7 +131,8 @@ const folderExists = dir => existsSync(dir) && lstatSync(dir).isDirectory();
       'REDBOT_ENABLE_MISSION_CONTROL=true',
       'DEVELOPMENT_MODE=true',
       `DATA_DIR=${dir}`,
-      'NODE_RED_ENABLE_PROJECTS=' + (projects === 'PROJECTS' ? 'true' : 'false')
+      'NODE_RED_ENABLE_PROJECTS=' + (projects === 'PROJECTS' ? 'true' : 'false'),
+      `ENVIRONMENT=${environment}`
     ];
 
     writeFileSync(`${__dirname}/../.env`, env.join('\n'));
