@@ -8,8 +8,13 @@ import Transport from '../../../src/components/transport';
 
 const TransportValue = (value, item) => (
   <div className="picker-item-transport">
-    <Transport transport={item.transport}/>
-    &nbsp;<b>{item.name}</b>
+    {item != null && (
+      <>
+        <Transport transport={item.transport}/>
+        &nbsp;<b>{item.name}</b>
+      </>
+    )}
+    {item == null && <span>Select transport</span>}
   </div>
 );
 
