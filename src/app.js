@@ -11,7 +11,7 @@ import {
 import { CodePlug, plug, useCodePlug } from 'code-plug';
 
 import sameArray from './helpers/same-array';
-
+import { useNodeRedSocket } from './hooks/socket';
 
 plug('reducers', (state, action) => {
   if (action.type === 'selectChatbot') {
@@ -32,7 +32,26 @@ plug('reducers', (state, action) => {
       ...state,
       chatbots: state.chatbots.map(chatbot => chatbot.id === action.chatbot.id ? action.chatbot : chatbot )
     };
+  } else if (action.type === 'dump') {
+    console.log('current state:', state);
+    return state;
+  } else if (action.type === 'setActiveChatbots') {
+    return {
+      ...state,
+      activeChatbots: action.activeChatbots
+    };
+  } else if (action.type === 'setEventTypes') {
+    return {
+      ...state,
+      eventTypes: action.eventTypes
+    };
+  } else if (action.type === 'setMessageTypes') {
+    return {
+      ...state,
+      messageTypes: action.messageTypes
+    };
   }
+
   return state;
 });
 
@@ -149,24 +168,80 @@ const usePrefetchedData = (client, { onComplete = () => {} }) => {
         setMessageTypes(response.messageTypes);
         setActiveChatbots(response.activeChatbots);
         setLoading(false);
-        onComplete({ platforms, eventTypes, messageTypes, activeChatbots, loading, chatbots });
+        onComplete({
+          platforms,
+          eventTypes: response.eventTypes,
+          messageTypes: response.messageTypes,
+          activeChatbots: response.activeChatbots,
+          loading,
+          chatbots
+        });
       });
   }, []);
 
   return { platforms, eventTypes, messageTypes, activeChatbots, loading, chatbots };
 };
 
+const RouterContainer = ({bootstrap, codePlug, dispatch }) => {
+  useNodeRedSocket({
+    onMessage: async(topic, payload) => {
+      if (topic === 'notification/runtime-deploy') {
+        // if deployed, then fetch again the globals, the active chatbots can be different
+        // in particular if the sender / receiver is inside a subflow, in that case the id is
+        // an alias id and changes at every deploy
+        const response = await fetch('/redbot/globals');
+        const globals = await response.json();
+        dispatch({ type: 'setActiveChatbots', activeChatbots: globals.activeChatbots });
+      }
+    }
+  })
+  const { items } = useCodePlug('pages', { permission: { '$intersect': bootstrap.user.permissions }})
+
+  return (
+    <Router basename="/mc">
+      <div className="mission-control-app">
+        <Container className="mc-main-container">
+          <Sidebar/>
+          <Container className="mc-inner-container">
+            <Header/>
+            <Content className="mc-inner-content">
+              <Switch>
+                {items.map(({ view: View, props }) => (
+                  <Route key={props.url} path={props.url} children={<View {...props} dispatch={dispatch}/>} />
+                ))}
+                <Route exact path="/" children={<HomePage dispatch={dispatch} codePlug={codePlug} />}/>
+                <Route path="*" component={PageNotFound} />
+              </Switch>
+            </Content>
+          </Container>
+        </Container>
+      </div>
+    </Router>
+  );
+};
+
 const AppRouter = ({ codePlug, bootstrap }) => {
   const [chatbotId] = useLocalStorage('chatbotId', undefined);
   const client = useClient(bootstrap.settings);
-  const { items } = useCodePlug('pages', { permission: { '$intersect': bootstrap.user.permissions }})
+
   const { platforms, eventTypes, messageTypes, activeChatbots, loading, chatbots } = usePrefetchedData(
     client, {
-      onComplete: ({ chatbots }) => dispatch({ type: 'setChatbots',  chatbots })
+      onComplete: ({ chatbots, activeChatbots, eventTypes, messageTypes }) => {
+        dispatch({ type: 'setChatbots',  chatbots });
+        dispatch({ type: 'setActiveChatbots', activeChatbots });
+        dispatch({ type: 'setEventTypes', eventTypes });
+        dispatch({ type: 'setMessageTypes', messageTypes });
+      }
     });
 
   const reducers = useMemo(() => compose(...codePlug.getItems('reducers').map(item => item.view )));
-  const [state, dispatch] = useReducer(reducers, { ...initialState, chatbotId, chatbots, ...bootstrap });
+  const [state, dispatch] = useReducer(reducers, {
+    ...initialState,
+    chatbotId,
+    activeChatbots,
+    chatbots,
+    ...bootstrap
+  });
 
   if (loading) {
     return (
@@ -178,37 +253,25 @@ const AppRouter = ({ codePlug, bootstrap }) => {
 
   return (
     <ApolloProvider client={client}>
-      <AppContext.Provider value={{
-        state,
-        dispatch,
-        client,
-        platforms,
-        eventTypes,
-        messageTypes,
-        activeChatbots,
-        chatbots
-      }}>
+      <AppContext.Provider
+        key="state-provider"
+        value={{
+          state,
+          dispatch,
+          client,
+          platforms,
+          eventTypes,
+          messageTypes,
+          //activeChatbots,
+          chatbots
+        }}
+      >
         <WebSocketReact dispatch={dispatch}>
           <ModalProvider>
-            <Router basename="/mc">
-              <div className="mission-control-app">
-                <Container className="mc-main-container">
-                  <Sidebar/>
-                  <Container className="mc-inner-container">
-                    <Header/>
-                    <Content className="mc-inner-content">
-                      <Switch>
-                        {items.map(({ view: View, props }) => (
-                          <Route key={props.url} path={props.url} children={<View {...props} dispatch={dispatch}/>} />
-                        ))}
-                        <Route exact path="/" children={<HomePage dispatch={dispatch} codePlug={codePlug} />}/>
-                        <Route path="*" component={PageNotFound} />
-                      </Switch>
-                    </Content>
-                  </Container>
-                </Container>
-              </div>
-            </Router>
+            <RouterContainer
+              codePlug={codePlug}
+              bootstrap={bootstrap}
+              dispatch={dispatch} />
           </ModalProvider>
         </WebSocketReact>
       </AppContext.Provider>

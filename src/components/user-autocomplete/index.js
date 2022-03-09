@@ -57,7 +57,6 @@ const UserAutocomplete = ({
               const found = items.find(item => item.id === current);
               if (found != null) {
                 setSearch(null);
-                console.log('one')
                 onChange(found);
               }
             } else if (isBackspace) {

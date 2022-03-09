@@ -4,6 +4,7 @@ const { UniversalPlatform, ContextProviders } = require('chat-platform');
 const RegisterType = require('../lib/node-installer');
 const GlobalContextHelper = require('../lib/helpers/global-context-helper');
 const GetEnvironment = require('../lib/helpers/get-environment');
+const GetNode = require('../lib/helpers/get-node');
 
 const isEmpty = value => _.isEmpty(value) && !_.isNumber(value);
 
@@ -15,6 +16,7 @@ module.exports = function(RED) {
   const registerType = RegisterType(RED);
   const globalContextHelper = GlobalContextHelper(RED);
   const getEnvironment = GetEnvironment(RED);
+  const getNode = GetNode(RED);
 
   function ChatBotConversation(config) {
     RED.nodes.createNode(this, config);
@@ -56,8 +58,9 @@ module.exports = function(RED) {
 
       // get the platform
       let platformNode;
-      if (RED.nodes.getNode(botNode) != null) {
-        platformNode = RED.nodes.getNode(botNode).chat;
+      const nodeInstance = getNode(botNode);
+      if (nodeInstance != null) {
+        platformNode = nodeInstance.chat;
       } else {
         const contextProvider = ContextProviders.getProviderById(this.store);
         if (contextProvider == null) {
@@ -74,6 +77,9 @@ module.exports = function(RED) {
 
       // finally send
       const message = await platformNode.createMessage(chatId, userId, null, msg)
+      message.redBot = {
+        environment: getEnvironment()
+      };
       send({ ...msg, ...message });
       done();
     });

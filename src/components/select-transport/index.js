@@ -3,7 +3,7 @@ import _ from 'lodash';
 import PropTypes from 'prop-types';
 import { SelectPicker } from 'rsuite';
 
-import useGlobals from '../../hooks/globals';
+import useMCContext from '../../hooks/mc-context';
 import Transport from '../../../src/components/transport';
 
 const TransportValue = (value, item) => (
@@ -22,7 +22,7 @@ const MenuItem = (label, item) => (
 );
 
 const SelectTransport = ({ transports, ...props }) => {
-  const { activeChatbots } = useGlobals();
+  const { state: { activeChatbots } } = useMCContext();
 
   return (
     <SelectPicker

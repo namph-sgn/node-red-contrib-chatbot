@@ -2,12 +2,13 @@ import React, { useEffect, useReducer } from 'react';
 import { Notification } from 'rsuite';
 
 import useSettings from './settings';
-import SocketListener from '../../lib/socket';
+import SocketListener from './lib/socket';
 import AppContext from '../common/app-context';
 
 const SocketContext = React.createContext({});
 
 let socketListener;
+let nodeRedSocketListener;
 
 class RawWebSocket extends React.Component {
 
@@ -96,4 +97,34 @@ const useSocket = ({ reducer = () => {}, initialState = {}, onMessage = () => {}
   };
 }
 
-export { useSocket as default, WebSocket, SocketContext };
+const useNodeRedSocket = ({ reducer = () => {}, initialState = {}, onMessage = () => {} } = {}) => {
+  const { host } = useSettings();
+  const handler = (topic, payload) => {
+    dispatch({ type: 'socket.message', topic, payload });
+    onMessage(topic, payload);
+  };
+  // connect socket
+  useEffect(() => {
+    if (nodeRedSocketListener == null) {
+      const webSocketProtol = window.location.protocol.includes('https') ? 'wss' : 'ws';
+      console.log(`Created listeing socket ${webSocketProtol}://${host}:1880/comms`);
+      nodeRedSocketListener = new SocketListener({
+        url: `${webSocketProtol}://${host}:1880/comms`,
+        payloadField: 'data'
+      });
+    }
+    nodeRedSocketListener.on('message', handler);
+    return () => nodeRedSocketListener.off('message', handler);
+  }, []);
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  return {
+    state,
+    dispatch,
+    // deprecated, bad name
+    sendMessage: (topic, payload) => socketListener.send(JSON.stringify({ topic, payload })),
+    sendToInput: (topic, payload) => socketListener.send(JSON.stringify({ topic, payload }))
+  };
+}
+
+export { useSocket as default, useNodeRedSocket, WebSocket, SocketContext };

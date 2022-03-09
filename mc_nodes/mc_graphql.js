@@ -69,11 +69,9 @@ module.exports = function(RED) {
         const response = mutate ?
           await client.mutate({ mutation: query, variables }) :
           await client.query({ query, variables, fetchPolicy: 'network-only' });
-
         if (!isEmptyResponse(response)) {
           send([{
             ...msg,
-            //data: response.data,
             payload: response.data,
             previous: msg.payload
           }, null, null]);
