@@ -61,6 +61,9 @@ module.exports = function(RED) {
     result.params = ChatPlatform.getParams();
     // add port
     result.uiPort = RED.settings.uiPort;
+    // if mc is installed
+    const mcSettings = RED.settings.RedBot || {};
+    result.missionControl = mcSettings.enableMissionControl || process.env.REDBOT_ENABLE_MISSION_CONTROL === 'true';
     res.send(result);
   });
 

@@ -89,11 +89,20 @@
       // fetch available context providers
       $.get(nodeRedUrl + 'redbot/globals')
         .done(function(response) {
+          console.log('globals', response)
           if (response != null && response.telegram != null && response.telegram[node.botname] != null) {
             $('#node-config-input-botname').prop('readonly', true);
             $('.form-editable').hide();
             $('.form-warning').show();
             $('.form-warning .bot-name').html('"' + node.botname + '"');
+          }
+          // hide mission control options if not enabled
+          if (!response.missionControl) {
+            $('.form-row-not-mission-control').show();
+            $('.form-row-mission-control').hide();
+            $('#node-config-input-enableMissionControl')
+              .prop('disabled', true)
+              .prop('checked', false);
           }
         });
       // if enable mission control, set a random chatbot id if empty
@@ -164,6 +173,13 @@
       <div>RedBot settings</div>
     </div>
     <div class="form-row">
+      <label for="node-config-input-debug">Debug</label>
+      <input type="checkbox" value="true" class="redbot-checkbox" id="node-config-input-debug">
+      <span class="redbot-form-hint">
+        Show debug information on send/receive
+      </span>
+    </div>
+    <div class="form-row">
       <label for="node-config-input-enableMissionControl" class="redbot-label">Use Mission Control</label>
       <input type="checkbox" value="true" class="redbot-checkbox" id="node-config-input-enableMissionControl">
       <span class="redbot-form-hint">
@@ -196,13 +212,6 @@
       <input type="checkbox" value="true" class="redbot-checkbox" id="node-config-input-storeMessages">
       <span class="redbot-form-hint">
         Store inbound and outbound messages in Mission Control
-      </span>
-    </div>
-    <div class="form-row">
-      <label for="node-config-input-debug">Debug</label>
-      <input type="checkbox" value="true" class="redbot-checkbox" id="node-config-input-debug">
-      <span class="redbot-form-hint">
-        Show debug information on send/receive
       </span>
     </div>
     <div class="form-row form-row-mission-control">
